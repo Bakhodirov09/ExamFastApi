@@ -9,14 +9,14 @@ router = APIRouter(prefix='/books', tags=['Books'])
 
 @router.get('/all', status_code=status.HTTP_200_OK)
 async def get_all_books(db: db_dependencies, user: Depends(JWTBearer)):
-    if user is not None:
+    if user is None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='User is not authenticated')
     books = db.query(BooksModel).all()
     return {'books': books}
 
 @router.get('/{book_id}', status_code=status.HTTP_200_OK)
 async def get_book(db: db_dependencies, user: Depends(JWTBearer), book_id: int):
-    if user is not None:
+    if user is None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='User is not authenticated')
     try:
         book = db.query(BooksModel).filter_by(id=book_id)
@@ -28,7 +28,7 @@ async def get_book(db: db_dependencies, user: Depends(JWTBearer), book_id: int):
 
 @router.post('/add-to-wish-list/{book_id}', status_code=status.HTTP_200_OK)
 async def add_to_wish_list(db: db_dependencies, book_id: int, user: Annotated[dict, Depends(JWTBearer)]):
-    if user is not None:
+    if user is None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='User is not authenticated')
     try:
         book = db.query(BooksModel).filter_by(id=book_id)
@@ -43,7 +43,7 @@ async def add_to_wish_list(db: db_dependencies, book_id: int, user: Annotated[di
 
 @router.post('/delete-to-wish-list/{wish_id}', status_code=status.HTTP_200_OK)
 async def add_to_wish_list(db: db_dependencies, wish_id: int, user: Annotated[dict, Depends(JWTBearer)]):
-    if user is not None:
+    if user is None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='User is not authenticated')
     try:
         wish_book = db.query(WishListModel).filter_by(id=wish_id, user_id=user.get('id'))
